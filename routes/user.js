@@ -1,11 +1,13 @@
 const {Router}= require("express");
 const userRouter= Router();
-
+const jwt = require("jsonwebtoken");
+const { usermodel, purchasemodel } = require("./db");
+const{JWT_USER_PASSWORD}= require("../config");
 
 userRouter.post("/signup", function(req, res){
     const {email, password, firstName, lastName} = req.body;
 
-    userModel.create({
+    usermodel.create({
         email: email,
         password: password,
         firstName: firstName,
@@ -16,13 +18,39 @@ userRouter.post("/signup", function(req, res){
     })
 })
 
-userRouter.post("/signin", function(req, res){
-    res.json({
-        message: "signin endpoint"
-    })
-})
+userRouter.post("/signin",async function(req, res){
+    const {email, password} = req.body;
+    const user = usermodel.findOne({
+        email: email,
+        password: password
+    });
+    if (user){
+        const token = jwt.sign({
+                   id: user._id
 
-userRouter.get("/purchases", function(req, res){
+        }, JWT_USER_PASSWORD);
+
+        res.json({
+            token: token
+        })
+    }else{
+        res.status(403).json({
+            message: "Incorrect credentials"
+        })
+    }
+
+    
+ })
+
+
+userRouter.get("/purchases", async function(req, res){
+    const userID= req.userID;
+  const purchases=   await purchasemodel.find({
+        userID,
+        courseId
+    })
+    
+
     res.json({
         message: "signup endpoint"
     })
