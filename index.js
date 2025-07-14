@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { userRouter } = require("./routes/user");
 const { courseRouter} = require("./routes/course");
 const { adminRouter } = require("./routes/admin");
+require('dotenv').config()
 
 
 const app= express();
@@ -16,7 +17,7 @@ createUserRoutex(app);
 createCourseRoutes(app);
 
 async function main(){
-    await mongoose.connect("mongodb+srv://tsaini0408:7KBdPa6TwaTSwqsd@cluster0.liy9kjj.mongodb.net/");
+    await mongoose.connect(process.env.MONGO_URL);
     app.listen(3000);
     console.log("listning to port 3000");
 }
